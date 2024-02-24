@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pThAEN43UegeJz2KGt+A6845cOw8+yObryk1RGbtMfg9HSuPSsH8i/PY65xMwm7JrK4WTapEe7WWFk1j9kikcA==",
+  "dgSpecHash": "xgHWlAwn1LzBISZyuSBCxP3wXc+memAfSRdSoQU9WAUqgS16bNuQml7MLpk5/4AZUlsqTu90+gWKJVHR4198QA==",
   "success": true,
-  "projectFilePath": "C:\\DATA\\projects\\gold_blazor\\Gold\\Gold\\Gold.csproj",
+  "projectFilePath": "C:\\DATA\\projects\\gold_blazor\\Gold\\Gold.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fabri\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.1\\microsoft.aspnetcore.authorization.8.0.1.nupkg.sha512",
     "C:\\Users\\fabri\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.1\\microsoft.aspnetcore.components.8.0.1.nupkg.sha512",

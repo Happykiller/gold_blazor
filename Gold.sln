@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gold", "Gold\Gold.csproj", "{E9155021-DCA4-4F3C-A282-A3DD749F1905}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gold", "Gold\Gold.csproj", "{E9155021-DCA4-4F3C-A282-A3DD749F1905}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gold.Client", "Gold.Client\Gold.Client.csproj", "{F6FE80FE-B0ED-4D68-9757-045E51ADAD93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gold.Client", "Gold.Client\Gold.Client.csproj", "{F6FE80FE-B0ED-4D68-9757-045E51ADAD93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

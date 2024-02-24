@@ -1,0 +1,93 @@
+﻿@page "/gold"
+@rendermode InteractiveAuto
+
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using System.Text
+@using System.Net.Http.Headers
+@using System.Net
+@inject IHttpClientFactory ClientFactory
+
+<PageTitle>Gold</PageTitle>
+
+<h1>Gold</h1>
+
+@if (getBranchesError || branches is null)
+{
+    <p>Unable to get branches from GitHub. Please try again later.</p>
+}
+else
+{
+    <ul>
+        @foreach (var branch in branches)
+        {
+            <li>@branch.Name</li>
+        }
+    </ul>
+}
+
+<button class="btn btn-sm btn-success" @onclick=this.IncrementCount>Successful Submit</button>
+
+<p role="status">Current count: @currentCount</p>
+
+<pre>
+@msg
+</pre>
+
+
+@code {
+
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private IEnumerable<GitHubBranch>? branches = Array.Empty<GitHubBranch>();
+    private bool getBranchesError;
+    private bool shouldRender;
+    private string msg = "coucou";
+
+    protected override bool ShouldRender() => shouldRender;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post,
+            "http://localhost:3000/graphql");
+
+
+        var client = ClientFactory.CreateClient();
+
+        var postBody = new { Title = "Blazor POST Request Example" };
+        request.Content = new StringContent(JsonSerializer.Serialize(postBody), Encoding.UTF8, "application/json");
+
+        // add authorization header
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiZmFybyIsImlkIjoxLCJpYXQiOjE3MDg3OTU0MDgsImV4cCI6MTcwODgyNDIwOH0.pAcVhnbzGIIwD5R2ULfRJqJ03IsmTKUaQCrIyVbDDCg");
+
+        var response = await client.SendAsync(request);
+
+        msg = await response.Content.ReadAsStringAsync();
+
+        Console.WriteLine(response);
+
+        if (response.IsSuccessStatusCode)
+        {
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+            msg = responseStream.ToString();
+        }
+        else
+        {
+            msg = "prout";
+            getBranchesError = true;
+        }
+
+        shouldRender = true;
+    }
+
+    public class GitHubBranch
+    {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+    }
+}
