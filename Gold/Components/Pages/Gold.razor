@@ -6,46 +6,88 @@
 @using System.Text
 @using System.Net.Http.Headers
 @using System.Net
+@using System.Runtime.InteropServices.JavaScript
 @inject IHttpClientFactory ClientFactory
 
-<PageTitle>Gold</PageTitle>
+<PageTitle>Compte Courant</PageTitle>
 
-<h1>Gold</h1>
+<h1>Compte Courant</h1>
 
-@if (getBranchesError || branches is null)
+@if (getoperationsError || operations is null)
 {
-    <p>Unable to get branches from GitHub. Please try again later.</p>
+    <p>Unable to get operations. Please try again later.</p>
 }
 else
 {
-    <ul>
-        @foreach (var branch in branches)
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Account</th>
+          <th>Dest</th>
+          <th>Third</th>
+          <th>Category</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var operation in operations)
         {
-            <li>@branch.Name</li>
+          var opeTime = new DateTime(1970, 1, 1).AddMilliseconds(Convert.ToDouble(operation.date));
+          var color = "#95a5a6";
+          var opera = "+";
+          if (operation.type_id == 1)
+          {
+            // Crédit Bleu
+            if (operation.status_id == 1) {
+              color = "#90EE90";
+            } else {
+              color = "#27ae60";
+            }
+          }
+          else if (operation.type_id == 2)
+          {
+            // Débit rouge
+            if (operation.status_id == 1) {
+              color = "#FF7F7F";
+            } else {
+              color = "#e74c3c";
+            }
+            opera = "-";
+          }
+          else if (operation.type_id == 3 && operation.account_id_dest == 2)
+          {
+            // Vir crédit
+            color = "#2980b9";
+          }
+          else
+          {
+            // Vir débit
+            color = "#9b59b6";
+            opera = "-";
+          }
+          <tr>
+            <th style="width:100px">@operation.id</th>
+            <th style="width:100px">@opeTime.ToString("dd/MM/yyyy")</th>
+            <th style="width:100px;color:@color">@opera@operation.amount€</th>
+            <td style="width:100px;text-align:center;">@operation.account_id</td>
+            <td style="width:100px;text-align:center;">@operation.account_id_dest</td>
+            <td style="width:100px;text-align:center;">@operation.third_id</td>
+            <td style="width:100px;text-align:center;">@operation.category_id</td>
+            <td style="overflow: hidden;text-overflow: ellipsis;width: 100%;max-width: 0;">
+              @operation.description
+            </td>
+          </tr>
         }
-    </ul>
+      </tbody>
+    </table>
 }
 
-<button class="btn btn-sm btn-success" @onclick=this.IncrementCount>Successful Submit</button>
-
-<p role="status">Current count: @currentCount</p>
-
-<pre>
-@msg
-</pre>
-
-
 @code {
-
-    private int currentCount = 0;
-
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
-
-    private IEnumerable<GitHubBranch>? branches = Array.Empty<GitHubBranch>();
-    private bool getBranchesError;
+    private IEnumerable<Operation>? operations = Array.Empty<Operation>();
+    private bool getoperationsError;
     private bool shouldRender;
     private string msg = "coucou";
 
@@ -54,40 +96,76 @@ else
     protected override async Task OnInitializedAsync()
     {
         var request = new HttpRequestMessage(HttpMethod.Post,
-            "http://localhost:3000/graphql");
+            "https://api.gold.happykiller.net/graphql");
 
 
         var client = ClientFactory.CreateClient();
 
-        var postBody = new { Title = "Blazor POST Request Example" };
+        var postBody = new { query = @"query {
+  operations (
+    dto: {
+      account_id: 2
+    }
+  ) {
+    id
+    account_id
+    account_id_dest
+    amount
+    date
+    status_id
+    type_id
+    third_id
+    category_id
+    description
+    creator_id
+    creation_date
+    modificator_id
+    modification_date
+  }
+}", variables = new { } };
         request.Content = new StringContent(JsonSerializer.Serialize(postBody), Encoding.UTF8, "application/json");
 
         // add authorization header
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiZmFybyIsImlkIjoxLCJpYXQiOjE3MDg3OTU0MDgsImV4cCI6MTcwODgyNDIwOH0.pAcVhnbzGIIwD5R2ULfRJqJ03IsmTKUaQCrIyVbDDCg");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiZmFybyIsImlkIjoxLCJpYXQiOjE3MDg4ODczOTcsImV4cCI6MTcwODkxNjE5N30.7w6ajp_1JBBNGL-y00uo0TP5ZmUCuaNJyDPKDE-EpTE");
 
         var response = await client.SendAsync(request);
 
-        msg = await response.Content.ReadAsStringAsync();
-
-        Console.WriteLine(response);
-
         if (response.IsSuccessStatusCode)
         {
-            using var responseStream = await response.Content.ReadAsStreamAsync();
-            msg = responseStream.ToString();
+            var json = await response.Content.ReadAsStringAsync();
+            var resp = JsonSerializer.Deserialize<RespOperations>(json);
+            operations = resp?.data?.operations;
         }
         else
         {
-            msg = "prout";
-            getBranchesError = true;
+            getoperationsError = true;
         }
 
         shouldRender = true;
     }
 
-    public class GitHubBranch
+    public class RespOperations
     {
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
+        public Operations? data { get; set; }
     }
+
+    public class Operations
+    {
+        public IList<Operation>? operations { get; set; }
+    }
+
+    public class Operation
+    {
+        public int? id { get; set; }
+        public int? account_id { get; set; }
+        public int? account_id_dest { get; set; }
+        public string? description { get; set; }
+        public float? amount { get; set; }
+        public string? date { get; set; }
+        public int? status_id { get; set; }
+        public int? type_id { get; set; }
+        public int? third_id { get; set; }
+        public int? category_id { get; set; }
+    }
+
 }
