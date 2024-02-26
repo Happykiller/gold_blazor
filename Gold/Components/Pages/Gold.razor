@@ -1,5 +1,4 @@
 ﻿@page "/gold"
-@rendermode InteractiveAuto
 
 @using System.Text.Json
 @using System.Text.Json.Serialization
@@ -9,9 +8,19 @@
 @using System.Runtime.InteropServices.JavaScript
 @inject IHttpClientFactory ClientFactory
 
-<PageTitle>Compte Courant</PageTitle>
+@if (getAccountError || account is null)
+{
+    <p>Unable to get account. Please try again later.</p>
+}
+else
+{
+    <PageTitle>Compte: @account.label</PageTitle>
 
-<h1>Compte Courant</h1>
+    <h1>@account.label</h1>
+
+    <h2>Balance reconcilé : @account.balance_reconcilied€</h2>
+    <h2>Balance non-reconcilé : @account.balance_not_reconcilied€</h2>
+}
 
 @if (getoperationsError || operations is null)
 {
@@ -35,7 +44,10 @@ else
       <tbody>
         @foreach (var operation in operations)
         {
+          // Date
           var opeTime = new DateTime(1970, 1, 1).AddMilliseconds(Convert.ToDouble(operation.date));
+
+          // Amount
           var color = "#95a5a6";
           var opera = "+";
           if (operation.type_id == 1)
@@ -68,14 +80,33 @@ else
             color = "#9b59b6";
             opera = "-";
           }
+
+          // Third
+          var third = operation.third?.label;
+          if (operation.third_id == 1)
+          {
+            third = "Autre créditeur";
+          }
+          else if (operation.third_id == 2)
+          {
+            third = "Autre débiteur";
+          }
+
+          // Category
+          var category = operation.category?.label;
+          if (operation.category_id == 1)
+          {
+            category = "Autre";
+          }
+
           <tr>
             <th style="width:100px">@operation.id</th>
             <th style="width:100px">@opeTime.ToString("dd/MM/yyyy")</th>
             <th style="width:100px;color:@color">@opera@operation.amount€</th>
-            <td style="width:100px;text-align:center;">@operation.account_id</td>
-            <td style="width:100px;text-align:center;">@operation.account_id_dest</td>
-            <td style="width:100px;text-align:center;">@operation.third_id</td>
-            <td style="width:100px;text-align:center;">@operation.category_id</td>
+            <td style="width:100px;text-align:center;">@operation.account?.label</td>
+            <td style="width:100px;text-align:center;">@operation.account_dest?.label</td>
+            <td style="width:200px;text-align:center;">@third</td>
+            <td style="width:200px;text-align:center;">@category</td>
             <td style="overflow: hidden;text-overflow: ellipsis;width: 100%;max-width: 0;">
               @operation.description
             </td>
@@ -83,89 +114,4 @@ else
         }
       </tbody>
     </table>
-}
-
-@code {
-    private IEnumerable<Operation>? operations = Array.Empty<Operation>();
-    private bool getoperationsError;
-    private bool shouldRender;
-    private string msg = "coucou";
-
-    protected override bool ShouldRender() => shouldRender;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Post,
-            "https://api.gold.happykiller.net/graphql");
-
-
-        var client = ClientFactory.CreateClient();
-
-        var postBody = new { query = @"query {
-  operations (
-    dto: {
-      account_id: 2
-    }
-  ) {
-    id
-    account_id
-    account_id_dest
-    amount
-    date
-    status_id
-    type_id
-    third_id
-    category_id
-    description
-    creator_id
-    creation_date
-    modificator_id
-    modification_date
-  }
-}", variables = new { } };
-        request.Content = new StringContent(JsonSerializer.Serialize(postBody), Encoding.UTF8, "application/json");
-
-        // add authorization header
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiZmFybyIsImlkIjoxLCJpYXQiOjE3MDg4ODczOTcsImV4cCI6MTcwODkxNjE5N30.7w6ajp_1JBBNGL-y00uo0TP5ZmUCuaNJyDPKDE-EpTE");
-
-        var response = await client.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            var json = await response.Content.ReadAsStringAsync();
-            var resp = JsonSerializer.Deserialize<RespOperations>(json);
-            operations = resp?.data?.operations;
-        }
-        else
-        {
-            getoperationsError = true;
-        }
-
-        shouldRender = true;
-    }
-
-    public class RespOperations
-    {
-        public Operations? data { get; set; }
-    }
-
-    public class Operations
-    {
-        public IList<Operation>? operations { get; set; }
-    }
-
-    public class Operation
-    {
-        public int? id { get; set; }
-        public int? account_id { get; set; }
-        public int? account_id_dest { get; set; }
-        public string? description { get; set; }
-        public float? amount { get; set; }
-        public string? date { get; set; }
-        public int? status_id { get; set; }
-        public int? type_id { get; set; }
-        public int? third_id { get; set; }
-        public int? category_id { get; set; }
-    }
-
 }

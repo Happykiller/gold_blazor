@@ -1877,23 +1877,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\fabri\\.nuget\\packages\\": {},
+    "C:\\Users\\faro\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\DATA\\projects\\gold_blazor\\Gold.Client\\Gold.Client.csproj",
+      "projectUniqueName": "D:\\Projets\\github\\gold_blazor\\Gold.Client\\Gold.Client.csproj",
       "projectName": "Gold.Client",
-      "projectPath": "C:\\DATA\\projects\\gold_blazor\\Gold.Client\\Gold.Client.csproj",
-      "packagesPath": "C:\\Users\\fabri\\.nuget\\packages\\",
-      "outputPath": "C:\\DATA\\projects\\gold_blazor\\Gold.Client\\obj\\",
+      "projectPath": "D:\\Projets\\github\\gold_blazor\\Gold.Client\\Gold.Client.csproj",
+      "packagesPath": "C:\\Users\\faro\\.nuget\\packages\\",
+      "outputPath": "D:\\Projets\\github\\gold_blazor\\Gold.Client\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\fabri\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\faro\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

@@ -1,19 +1,129 @@
 ﻿@page "/counter"
 @rendermode InteractiveAuto
 
-<PageTitle>Counter</PageTitle>
+<PageTitleles comptes</PageTitleles>
 
-<h1>Counter</h1>
+<InputSelect id="department" @bind-Value="currentAccount">
+<option value=4>Alimentation</option>
+<option default value=2>Courrant</option>
+<option value=7>Distribution</option>
+<option value=8>Fabrice</option>
+<option value=11>Illidan</option>
+<option value=18>Mobilité</option>
+<option value=19>Sorties</option>
+<option value=23>Vacances</option>
+</InputSelect>
 
-<p role="status">Current count: @currentCount</p>
+<button class="btn btn-primary" @onclick='() => Load(currentAccount)'>Afficher</button>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+@if (getAccountError || account is null)
+{
+    <p>Unable to get account. Please try again later.</p>
+}
+else
+{
+    <h1>@account.label</h1>
 
-@code {
-    private int currentCount = 0;
+    <h2>Balance reconcilé : @account.balance_reconcilied€</h2>
+    <h2>Balance non-reconcilé : @account.balance_not_reconcilied€</h2>
+}
 
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+@if (getoperationsError || operations is null)
+{
+    <p>Unable to get operations. Please try again later.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Account</th>
+                <th>Dest</th>
+                <th>Third</th>
+                <th>Category</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var operation in operations)
+            {
+                // Date
+                var opeTime = new DateTime(1970, 1, 1).AddMilliseconds(Convert.ToDouble(operation.date));
+
+                // Amount
+                var color = "#95a5a6";
+                var opera = "+";
+                if (operation.type_id == 1)
+                {
+                    // Crédit Bleu
+                    if (operation.status_id == 1)
+                    {
+                        color = "#90EE90";
+                    }
+                    else
+                    {
+                        color = "#27ae60";
+                    }
+                }
+                else if (operation.type_id == 2)
+                {
+                    // Débit rouge
+                    if (operation.status_id == 1)
+                    {
+                        color = "#FF7F7F";
+                    }
+                    else
+                    {
+                        color = "#e74c3c";
+                    }
+                    opera = "-";
+                }
+                else if (operation.type_id == 3 && operation.account_id_dest == currentAccount)
+                {
+                    // Vir crédit
+                    color = "#2980b9";
+                }
+                else
+                {
+                    // Vir débit
+                    color = "#9b59b6";
+                    opera = "-";
+                }
+
+                // Third
+                var third = operation.third?.label;
+                if (operation.third_id == 1)
+                {
+                    third = "Autre créditeur";
+                }
+                else if (operation.third_id == 2)
+                {
+                    third = "Autre débiteur";
+                }
+
+                // Category
+                var category = operation.category?.label;
+                if (operation.category_id == 1)
+                {
+                    category = "Autre";
+                }
+
+                <tr>
+                    <th style="width:100px">@operation.id</th>
+                    <th style="width:100px">@opeTime.ToString("dd/MM/yyyy")</th>
+                    <th style="width:100px;color:@color">@opera@operation.amount€</th>
+                    <td style="width:100px;text-align:center;">@operation.account?.label</td>
+                    <td style="width:100px;text-align:center;">@operation.account_dest?.label</td>
+                    <td style="width:200px;text-align:center;">@third</td>
+                    <td style="width:200px;text-align:center;">@category</td>
+                    <td style="overflow: hidden;text-overflow: ellipsis;width: 100%;max-width: 0;">
+                        @operation.description
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
