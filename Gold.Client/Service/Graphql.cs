@@ -13,11 +13,11 @@ namespace Gold.Service
         private string host = "https://api.gold.happykiller.net/graphql";
         // DEV
         // private string host = "http://localhost:3000/graphql";
-        private string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiZmFybyIsImlkIjoxLCJpYXQiOjE3MDg5NzI1ODUsImV4cCI6MTcwOTAwMTM4NX0.GfKL30MIs04bisdeSffXa9pKt7tbJXHKu6fbZRJpx1k";
+        private string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiZmFybyIsImlkIjoxLCJpYXQiOjE3MDkxMDQ2NDgsImV4cCI6MTcwOTEzMzQ0OH0.5LLh1OhK4QJosvKbAAGfm0ct7g8k1C_XEs6hkXOAUME";
         HttpClient _client;
         string responseString;
 
-        public async Task<string> Execute(string qry)
+        public virtual async Task<string> Execute(string qry)
         {
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -30,6 +30,7 @@ namespace Gold.Service
             };
             StringContent content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.PostAsync(uri, content);
+
             if (response.IsSuccessStatusCode)
             {
                 responseString = await response.Content.ReadAsStringAsync();

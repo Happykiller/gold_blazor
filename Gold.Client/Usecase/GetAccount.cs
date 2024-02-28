@@ -1,4 +1,5 @@
 ﻿using Gold.Service;
+using System;
 using System.Text.Json;
 using System.Xml.Linq;
 
@@ -6,6 +7,13 @@ namespace Gold.Usecase
 {
     public class GetAccountUsecase
     {
+        private readonly GraphQlService _graphQlService;
+
+        public GetAccountUsecase(GraphQlService graphQlService)
+        {
+            _graphQlService = graphQlService;
+        }
+
         public class Account
         {
             public int? id { get; set; }
@@ -26,9 +34,9 @@ namespace Gold.Usecase
             public Account? account { get; set; }
         }
 
+
         public async Task<Account> Execute(int account_id)
         {
-            GraphQlService graphQlService = new GraphQlService();
             string qry = @"query {
                   account (
                     dto: {
@@ -44,7 +52,7 @@ namespace Gold.Usecase
                     balance_not_reconcilied
                   }
                 }";
-            string response = await graphQlService.Execute(qry);
+            string response = await _graphQlService.Execute(qry);
             var respAccount = JsonSerializer.Deserialize<RespAccount>(response);
             return respAccount?.data?.account;
         }

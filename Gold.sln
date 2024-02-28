@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gold", "Gold\Gold.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gold.Client", "Gold.Client\Gold.Client.csproj", "{F6FE80FE-B0ED-4D68-9757-045E51ADAD93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gold.ClientTests", "Gold.ClientTests\Gold.ClientTests.csproj", "{43E9826A-61E8-4CB2-AEDD-286C841C2EA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F6FE80FE-B0ED-4D68-9757-045E51ADAD93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6FE80FE-B0ED-4D68-9757-045E51ADAD93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6FE80FE-B0ED-4D68-9757-045E51ADAD93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43E9826A-61E8-4CB2-AEDD-286C841C2EA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43E9826A-61E8-4CB2-AEDD-286C841C2EA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43E9826A-61E8-4CB2-AEDD-286C841C2EA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43E9826A-61E8-4CB2-AEDD-286C841C2EA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

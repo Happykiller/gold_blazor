@@ -1,7 +1,80 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using System.Text
+@using System.Net.Http.Headers
+@using System.Net
+@using System.Runtime.InteropServices.JavaScript
 
-<h1>Hello, world!</h1>
+@if (getAccountsError || accounts is null)
+{
+    <p>Unable to get Accounts. Please try again later.</p>
+}
+else
+{
+    <h1>Compte individuel</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Compte</th>
+                <th>Reconcilié</th>
+                <th>Non-reconciclié</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in accounts)
+            {
+                @if (account.id == 2)
+                {
+                    <tr>
+                        <th style="width:100px">@account.id</th>
+                        <th style="width:200px;">@account.label</th>
+                        <td style="width:100px;color:@account.balance_reconcilied_color">@account.balance_reconcilied€</td>
+                        <td style="width:100px;color:@account.balance_not_reconcilied_color">@account.balance_not_reconcilied€</td>
+                        <th>@account.description</th>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 
-Welcome to your new app.
+    <h1>Livret Cap Region</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Compte</th>
+          <th>Reconcilié</th>
+          <th>Non-reconciclié</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var account in accounts)
+        {
+            @if (list.Contains(account.id ?? 0))
+            {
+              balance_reconcilied_total = balance_reconcilied_total + account.balance_reconcilied ?? 0;
+              balance_not_reconcilied_total = balance_not_reconcilied_total + account.balance_not_reconcilied ?? 0;
+              <tr>
+                <th style="width:100px">@account.id</th>
+                <th style="width:200px;">@account.label</th>
+                <td style="width:100px;color:@account.balance_reconcilied_color">@account.balance_reconcilied€</td>
+                <td style="width:100px;color:@account.balance_not_reconcilied_color">@account.balance_not_reconcilied€</td>
+                <th>@account.description</th>
+              </tr>
+            }
+        }
+        <tr>
+            <th style="width:100px"></th>
+            <th style="width:200px;"></th>
+                <td style="width:100px;color:#27ae60">@balance_reconcilied_total€</td>
+                <td style="width:100px;color:#27ae60">@balance_not_reconcilied_total€</td>
+            <th></th>
+        </tr>
+      </tbody>
+    </table>
+}
